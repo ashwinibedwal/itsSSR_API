@@ -1,15 +1,15 @@
 // lib/app.ts
-import express = require('express');
 
-// Create a new express application instance
-const app: express.Application = express();
+import app from './app'
+import {Config} from './environment'
+//var config1=new Config();//.getValue();
 
 app.get('/', function (req, res) {
-  res.send('Hello World!');
+  
 });
-
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
-});
-
-app.use('/login',require('./routes/login.route').router)
+console.log(Config);
+//app.set('Config', JSON.parse(fs.readFileSync('./app/src/config.json', 'utf8')) )
+app.listen(Config.PORT, function () {
+  console.log('server app listening on port!', Config.PORT);
+})
+//app.use('/login',require('./routes/login.route').router)

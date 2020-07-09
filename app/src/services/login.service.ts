@@ -1,15 +1,21 @@
-import{User} from '../Models/user';
+import{User,IUser} from '../Models/user';
 import jwt from 'jsonwebtoken';
-import {Config} from '../Config'
+import {Config} from "../environment"
+import {Response} from "express"
+import user_schema from  "../schemas/user_schema"
+import {ResponseProvider} from "../common/response_provider"
+
 export class LoginService{
+
+    res_provider:ResponseProvider=null;
+    
     constructor()
     {
-
+        this.res_provider=new ResponseProvider();
     }
-   public static validateUser (userobj:User):boolean
-    {
+    validateUser (userobj:User):boolean{
        try{
-            jwt.verify("","ganesh",function(err:any,decoded:any){
+            jwt.verify(userobj.token,Config.SECRET_KEY,function(err:any,decoded:any){
                 if(err)
                 {
                     console.log("login failed",err)
@@ -28,18 +34,26 @@ export class LoginService{
         return false;
     }
     
-    public static loginUser(userobj:User):User{
-        var u=new User();
-        if(!userobj.password||!userobj.password){
-            return u;
-        }
-        return u;
+   async loginUser(userObj:User,res:Response){
+        var _user=new user_schema(userObj);
+        _user.collection.findOne({$and:[{username:userObj.username},{password:userObj.password}] },
+            (err,rtnuser)=>{
+                if(err)
+                {
+                    this.res_provider.MongoErrorResponse(res,"Mongo Error");
+                    return;
+                }
+                if(rtnuser)
+                {
+                rtnuser.token= jwt.sign(rtnuser,Config.SECRET_KEY)
+                this.res_provider.SuccessResponse(res,"Login Success",rtnuser);
+                return;
+                }
+               this.res_provider.FailResponse(res,"Login Failed! incorrect data"); 
+        });
     }
-    public static registerUser(userobj:User):User{
-        var u=new User();
-        if(!userobj.password||!userobj.password){
-            return u;
-        }
-        return u;
+    registerUser(userObj:IUser){
+        var _user=new user_schema(userObj);
+        _user.save();
     }
 };

@@ -1,11 +1,17 @@
-export class User{
-    constructor()
-    {
-
-    }
-     id:string | undefined;
-    email:string | undefined;
-    username:string | undefined;
-    password:string | undefined;
-    token:string | undefined;
+export interface IUser{
+   
+     id?:string;
+    email?:string;
+    username?:string;
+    password?:string;
+    token?:string;
 }
+export class User implements IUser
+{
+    id?:string;
+    email?:string;
+    username?:string;
+    password?:string;
+    token?:string;
+}
+

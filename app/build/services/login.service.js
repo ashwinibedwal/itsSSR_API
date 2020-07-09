@@ -11,7 +11,7 @@ class LoginService {
     }
     static validateUser(userobj) {
         try {
-            jsonwebtoken_1.default.verify("", "ganesh", function (err, decoded) {
+            jsonwebtoken_1.default.verify(userobj.token, "", function (err, decoded) {
                 if (err) {
                     console.log("login failed", err);
                     return false;
